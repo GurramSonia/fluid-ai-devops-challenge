@@ -19,16 +19,14 @@ jobs:
       - name: Check Kubernetes
         run: kubectl get nodes
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Check Python
+        run: py --version
 
       - name: Install Python dependencies
-        run: pip install -r app/requirements.txt
+        run: py -m pip install -r app/requirements.txt
 
       - name: Run application tests
-        run: python -m pytest -v
+        run: py -m pytest -v
 
       - name: Build Docker image
         run: docker build --progress=plain -t fluid-ai-backend:${{ github.sha }} ./app
