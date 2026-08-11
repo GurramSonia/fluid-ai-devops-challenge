@@ -13,8 +13,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check Docker
+        run: docker version
+
+      - name: Check Kubernetes
+        run: kubectl get nodes
+
       - name: Build Docker image
-        run: docker build -t fluid-ai-backend:${{ github.sha }} ./app
+        run: docker build --progress=plain -t fluid-ai-backend:${{ github.sha }} ./app
 
       - name: Deploy PostgreSQL
         run: kubectl apply -f k8s/secret.yaml -f k8s/postgres.yaml
