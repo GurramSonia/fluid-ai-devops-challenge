@@ -19,11 +19,22 @@ jobs:
       - name: Check Kubernetes
         run: kubectl get nodes
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install -r app/requirements.txt
+
+      - name: Run application tests
+        run: python -m pytest -v
+
       - name: Build Docker image
         run: docker build --progress=plain -t fluid-ai-backend:${{ github.sha }} ./app
 
       - name: Deploy PostgreSQL
-        run: kubectl apply -f k8s/secret.yaml -f k8s/postgres.yaml
+        run: kubectl apply -f k8s/secret.yaml -f k8s/configmap.yaml -f k8s/postgres.yaml
 
       - name: Deploy Backend
         run: kubectl apply -f k8s/backend.yaml

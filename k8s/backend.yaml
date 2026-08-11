@@ -4,51 +4,53 @@ metadata:
   name: backend
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: backend
+
   template:
     metadata:
       labels:
         app: backend
+
     spec:
       containers:
         - name: backend
-          image: fluid-ai-backend:1.0
+          image: fluid-ai-backend:2.0
           imagePullPolicy: IfNotPresent
 
           ports:
             - containerPort: 8000
 
+          envFrom:
+            - configMapRef:
+                name: backend-config
+
           env:
-            - name: POSTGRES_HOST
-              value: postgres
-
-            - name: POSTGRES_DB
-              value: appdb
-
-            - name: POSTGRES_USER
-              value: appuser
-
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
 
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8000
-            initialDelaySeconds: 5
-            periodSeconds: 10
-
           livenessProbe:
             httpGet:
-              path: /health
+              path: /health/live
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
 
           resources:
             requests:
