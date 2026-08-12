@@ -30,6 +30,12 @@ jobs:
 
       - name: Build Docker image
         run: docker build --progress=plain -t fluid-ai-backend:${{ github.sha }} ./app
+      
+      - name: Check Trivy
+        run: trivy --version
+      
+      - name: Scan Docker image with Trivy
+        run: trivy image --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed fluid-ai-backend:${{ github.sha }}
 
       - name: Deploy PostgreSQL
         run: kubectl apply -f k8s/secret.yaml -f k8s/configmap.yaml -f k8s/postgres.yaml
