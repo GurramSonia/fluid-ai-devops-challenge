@@ -18,7 +18,7 @@ spec:
       containers:
         - name: backend
           image: fluid-ai-backend:2.0
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
 
           ports:
             - containerPort: 8000
